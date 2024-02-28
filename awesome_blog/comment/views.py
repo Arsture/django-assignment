@@ -1,7 +1,10 @@
 from rest_framework import viewsets, permissions
+
 from .models import Comment
 from .permissions import IsOwnerOrReadOnly
 from .serializers import CommentSerializer
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -22,3 +25,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(is_updated=True)
+
+    @action(detail=False, methods=['get'], url_path='by-tag/(?P<tag_content>[^/.]+)')
+    def by_tag(self, request, tag_content=None):
+        comments = Comment.objects.filter(tags__content=tag_content)
+        serializer = self.get_serializer(comments, many=True)
+        return Response(serializer.data)

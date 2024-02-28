@@ -3,6 +3,8 @@ from .models import Post
 from .permissions import IsOwnerOrReadOnly
 from .serializers import PostSerializer
 from rest_framework import permissions
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -22,3 +24,9 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+    @action(detail=False, methods=['get'], url_path='by-tag/(?P<tag_content>[^/.]+)')
+    def by_tag(self, request, tag_content=None):
+        posts = Post.objects.filter(tags__content=tag_content)
+        serializer = self.get_serializer(posts, many=True)
+        return Response(serializer.data)
