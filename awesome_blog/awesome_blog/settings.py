@@ -42,13 +42,18 @@ INSTALLED_APPS = [
     'comment',
     'post',
     'tag',
+    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',  # 장고 웹 기반 api auth
         'rest_framework.authentication.TokenAuthentication',  # 내가 설정한 토큰 기반 auth
-    ]
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
 }
 
 AUTH_USER_MODEL = 'user.User'

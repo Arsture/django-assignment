@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from tag.models import Tag
 
 
 class Comment(models.Model):
@@ -9,6 +10,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_updated = models.BooleanField(default=False)
+    tags = models.ManyToManyField(Tag, related_name='comments', blank=True)
 
     def __str__(self):
         return 'Comment by {} on {}'.format(self.created_by, self.post)
