@@ -17,7 +17,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'created_by', 'title', 'description', 'created_at', 'updated_at', 'tags']
+        fields = '__all__'
         read_only_fields = ('id', 'created_by', 'created_at', 'updated_at')
 
     def create(self, validated_data):
@@ -28,3 +28,10 @@ class PostSerializer(serializers.ModelSerializer):
             tag, created = Tag.objects.get_or_create(content=tag_name)
             post.tags.add(tag)
         return post
+
+
+class PostListSerializer(PostSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'created_by', 'title', 'description', 'tags']
+        read_only_fields = ('id', 'created_by')

@@ -3,7 +3,7 @@ from rest_framework import viewsets, permissions
 from awesome_blog.pagination import CustomCursorPagination
 from .models import Comment
 from post.permissions import IsAdminOrOwnerOrReadOnly
-from .serializers import CommentSerializer
+from .serializers import CommentSerializer, CommentListSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -27,6 +27,11 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(is_updated=True)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return CommentListSerializer
+        return CommentSerializer
 
     @action(detail=False, methods=['get'], url_path='by-tag/(?P<tag_content>[^/.]+)')
     def by_tag(self, request, tag_content=None):

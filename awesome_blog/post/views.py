@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from awesome_blog.pagination import CustomCursorPagination
 from .models import Post
 from .permissions import IsAdminOrOwnerOrReadOnly
-from .serializers import PostSerializer
+from .serializers import PostSerializer, PostListSerializer
 from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -32,6 +32,11 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return PostListSerializer
+        return PostSerializer
 
     @action(detail=False, methods=['get'], url_path='by-tag/(?P<tag_content>[^/.]+)')
     def by_tag(self, request, tag_content=None):

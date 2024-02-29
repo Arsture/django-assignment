@@ -5,8 +5,8 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ('email', 'is_admin')
-    list_filter = ('is_admin',)
+    list_display = ('email', 'created_at', 'is_admin')
+    list_filter = ('created_at',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Permissions', {'fields': ('is_admin',)}),
@@ -18,5 +18,5 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
     search_fields = ('email',)
-    ordering = ('email',)
+    ordering = ('-created_at',)
     filter_horizontal = ()

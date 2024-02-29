@@ -12,7 +12,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'post', 'created_by', 'content', 'created_at', 'updated_at', 'is_updated', 'tags']
+        fields = '__all__'
         read_only_fields = ('id', 'created_by', 'created_at', 'updated_at', 'is_updated')
 
     def create(self, validated_data):
@@ -22,3 +22,10 @@ class CommentSerializer(serializers.ModelSerializer):
             tag, created = Tag.objects.get_or_create(content=tag_name)
             comment.tags.add(tag)
         return comment
+
+
+class CommentListSerializer(CommentSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'post', 'content', 'created_by', 'tags')
+        read_only_fields = ('id', 'created_by')
