@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions
 
+from awesome_blog.pagination import CustomCursorPagination
 from .models import Comment
 from post.permissions import IsAdminOrOwnerOrReadOnly
 from .serializers import CommentSerializer
@@ -8,8 +9,9 @@ from rest_framework.response import Response
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.all().order_by('-created_at')
     serializer_class = CommentSerializer
+    pagination_class = CustomCursorPagination
 
     def get_permissions(self):
         if self.action == 'create':

@@ -1,4 +1,6 @@
 from rest_framework import viewsets
+
+from awesome_blog.pagination import CustomCursorPagination
 from .models import Post
 from .permissions import IsAdminOrOwnerOrReadOnly
 from .serializers import PostSerializer
@@ -8,8 +10,9 @@ from rest_framework.response import Response
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
+    pagination_class = CustomCursorPagination
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
