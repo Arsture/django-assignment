@@ -1,18 +1,15 @@
 from rest_framework import viewsets
 from .models import Post
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsAdminOrOwnerOrReadOnly
 from .serializers import PostSerializer
 from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import generics
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-
-    # permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -25,7 +22,7 @@ class PostViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             permission_classes = [permissions.IsAuthenticated]
         elif self.action in ['update', 'partial_update', 'destroy']:
-            permission_classes = [IsOwnerOrReadOnly]
+            permission_classes = [IsAdminOrOwnerOrReadOnly]
         else:
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]

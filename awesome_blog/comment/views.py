@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 
 from .models import Comment
-from .permissions import IsOwnerOrReadOnly
+from post.permissions import IsAdminOrOwnerOrReadOnly
 from .serializers import CommentSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -15,7 +15,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             permission_classes = [permissions.IsAuthenticated]
         elif self.action in ['update', 'partial_update', 'destroy']:
-            permission_classes = [IsOwnerOrReadOnly]
+            permission_classes = [IsAdminOrOwnerOrReadOnly]
         else:
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
