@@ -16,8 +16,8 @@ class Comment(models.Model):
         return 'Comment by {} on {}'.format(self.created_by, self.post)
 
     def delete(self, *args, **kwargs):
-        tags = self.tags.all()
-        super().delete(*args, **kwargs)  # Post 인스턴스를 먼저 삭제
+        tags = list(self.tags.all())
+        super().delete(*args, **kwargs)  # Comment 인스턴스를 먼저 삭제
         for tag in tags:
             if not tag.posts.exists() and not tag.comments.exists():
                 tag.delete()
