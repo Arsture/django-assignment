@@ -5,6 +5,7 @@ from .serializers import PostSerializer
 from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import generics
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -12,6 +13,13 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
 
     # permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(created_by=request.user)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=201, headers=headers)
 
     def get_permissions(self):
         if self.action == 'create':
