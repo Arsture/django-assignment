@@ -76,6 +76,21 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'awesome_blog.urls'
 
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        'Token으로 하는 거임': {
+            'type': 'apiKey',
+            'name': 'Token eb7cecb7ac18f식으로 하셈',
+            'in': 'header',
+            'description': "Token"
+        },
+        'BasicAuth': {
+            'type': 'token',
+        },
+    },
+}
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
