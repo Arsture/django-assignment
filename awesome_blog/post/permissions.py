@@ -1,19 +1,36 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAuthenticated
+from rest_framework.permissions import BasePermission
 
 
-class IsAdminOrOwnerOrReadOnly(BasePermission):
-    """
-    객체의 소유자만이 객체를 수정할 수 있게 하는 사용자 정의 권한.
-    """
+class IsAdmin(BasePermission):
+    def is_admin(self, request):
+        return request.user and request.user.is_staff
+
+    def has_permission(self, request, view):
+        return self.is_admin(request)
 
     def has_object_permission(self, request, view, obj):
-        # 읽기 권한은 모두에게 허용됨. 따라서, 안전한 메서드(GET, HEAD, OPTIONS)는 항상 허용됨.
+        return self.is_admin(request)
 
-        if request.method in SAFE_METHODS:
+
+class IsAuthenticated(IsAdmin):
+    def has_permission(self, request, view):
+        if super().has_permission(request, view):
             return True
 
-        if request.user.is_authenticated and request.user.is_admin:
+        if request.method == 'POST':
+            return request.user and request.user.is_authenticated
+
+
+class IsOwner(IsAdmin):
+    def has_permission(self, request, view):
+        if super().has_permission(request, view):
             return True
 
-        # Write permissions are only allowed to the owner of the post.
+        if request.method in ['PUT', 'DELETE', 'PATCH']:
+            return True
+
+    def has_object_permission(self, request, view, obj):
+        if super().has_object_permission(request, view, obj):
+            return True
+
         return obj.created_by == request.user

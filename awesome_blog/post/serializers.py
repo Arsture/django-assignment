@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from services.TagHandleService import tag_handle_service
 from .models import Post, Comment, Tag
 
 
@@ -10,7 +12,17 @@ class TagListField(serializers.ListField):
         return [tag.content for tag in value.all()]
 
 
-class PostSerializer(serializers.ModelSerializer):
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['content']
+
+    def create(self, validated_data):
+        tag, created = Tag.objects.get_or_create(content=validated_data['content'])
+        return tag
+
+
+class PostDetailSerializer(serializers.ModelSerializer):
     tags = TagListField()
 
     class Meta:
@@ -19,16 +31,10 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_by', 'created_at', 'updated_at')
 
     def create(self, validated_data):
-        tags_data = validated_data.pop('tags', [])
-        post = Post.objects.create(**validated_data)
-        for tag_name in tags_data:
-            # 각 태그 이름에 대해 Tag 객체를 가져오거나 생성합니다.
-            tag, created = Tag.objects.get_or_create(content=tag_name)
-            post.tags.add(tag)
-        return post
+        return tag_handle_service.create_object_with_tag(validated_data, Post)
 
 
-class PostListSerializer(PostSerializer):
+class PostListSerializer(PostDetailSerializer):
     class Meta:
         model = Post
         fields = ['id', 'created_by', 'title', 'description', 'tags']
@@ -44,26 +50,4 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_by', 'created_at', 'updated_at', 'is_updated')
 
     def create(self, validated_data):
-        tags_data = validated_data.pop('tags', [])
-        comment = Comment.objects.create(**validated_data)
-        for tag_name in tags_data:
-            tag, created = Tag.objects.get_or_create(content=tag_name)
-            comment.tags.add(tag)
-        return comment
-
-
-class CommentListSerializer(CommentSerializer):
-    class Meta:
-        model = Comment
-        fields = ('id', 'post', 'content', 'created_by', 'tags')
-        read_only_fields = ('id', 'created_by')
-
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ['content']
-
-    def create(self, validated_data):
-        tag, created = Tag.objects.get_or_create(content=validated_data['content'])
-        return tag
+        return tag_handle_service.create_object_with_tag(validated_data, Comment)
