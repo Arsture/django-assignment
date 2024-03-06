@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import PostViewSet
 
-router = DefaultRouter()
+router = DefaultRouter() #TODO: router 쓰지말자
 router.register(r'posts', PostViewSet)
 
 urlpatterns = [

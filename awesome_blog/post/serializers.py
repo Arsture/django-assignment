@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from .models import Post
-from tag.serializers import TagSerializer
-from tag.models import Tag
+from .models import Post, Comment, Tag
 
 
 class TagListField(serializers.ListField):
@@ -35,3 +33,37 @@ class PostListSerializer(PostSerializer):
         model = Post
         fields = ['id', 'created_by', 'title', 'description', 'tags']
         read_only_fields = ('id', 'created_by')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    tags = TagListField()
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        read_only_fields = ('id', 'created_by', 'created_at', 'updated_at', 'is_updated')
+
+    def create(self, validated_data):
+        tags_data = validated_data.pop('tags', [])
+        comment = Comment.objects.create(**validated_data)
+        for tag_name in tags_data:
+            tag, created = Tag.objects.get_or_create(content=tag_name)
+            comment.tags.add(tag)
+        return comment
+
+
+class CommentListSerializer(CommentSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'post', 'content', 'created_by', 'tags')
+        read_only_fields = ('id', 'created_by')
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['content']
+
+    def create(self, validated_data):
+        tag, created = Tag.objects.get_or_create(content=validated_data['content'])
+        return tag
