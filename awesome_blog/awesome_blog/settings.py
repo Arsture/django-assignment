@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-e^$(eyh4y0b+1r(^mf$xsuu2y0s8ym4wwm_k^a#hvi(omb5em&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # TODO: Change this to False when deploying to production
 
-ALLOWED_HOSTS = []  # TODO: Add your domain name or IP address here
+ALLOWED_HOSTS = ['*']  # TODO: Add your domain name or IP address here
 
 # Application definition
 
@@ -35,6 +35,31 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'user',
+    'post',
+    'drf_yasg',
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  # 장고 웹 기반 api auth
+        'rest_framework.authentication.TokenAuthentication',  # 내가 설정한 토큰 기반 auth
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
+    'PAGE_SIZE': 10,
+}
+
+AUTH_USER_MODEL = 'user.User'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +73,21 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'awesome_blog.urls'
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        'Token으로 하는 거임': {
+            'type': 'apiKey',
+            'name': 'Token',
+            'in': 'header',
+            'description': "Token eb7cecb7ac18f식으로 하셈"
+        },
+        'BasicAuth': {
+            'type': 'token',
+        },
+    },
+}
 
 TEMPLATES = [
     {
@@ -73,9 +113,9 @@ WSGI_APPLICATION = 'awesome_blog.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'myblogdb',
-        'USER': 'user1',
-        'PASSWORD': 'user1password',
+        'NAME': 'awesome_blog',
+        'USER': 'blogger',
+        'PASSWORD': 'password',
         'HOST': 'localhost',
         'PORT': '5432',
     }
