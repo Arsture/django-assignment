@@ -79,9 +79,9 @@ SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'Token으로 하는 거임': {
             'type': 'apiKey',
-            'name': 'Token eb7cecb7ac18f식으로 하셈',
+            'name': 'Token',
             'in': 'header',
-            'description': "Token"
+            'description': "Token eb7cecb7ac18f식으로 하셈"
         },
         'BasicAuth': {
             'type': 'token',
